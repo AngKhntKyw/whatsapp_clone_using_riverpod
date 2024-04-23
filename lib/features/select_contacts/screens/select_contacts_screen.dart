@@ -38,8 +38,14 @@ class SelectContactsScreen extends ConsumerWidget {
             itemCount: contacts.length,
             itemBuilder: (context, index) {
               final contact = contacts[index];
+
               return InkWell(
-                onTap: () => selectContact(ref, contact, context),
+                onTap: () {
+                  contact.phones.isNotEmpty
+                      ? selectContact(ref, contact, context)
+                      : null;
+                },
+                // onTap: () => selectContact(ref, contact, context),
                 child: ListTile(
                   leading: CircleAvatar(
                     radius: 20,

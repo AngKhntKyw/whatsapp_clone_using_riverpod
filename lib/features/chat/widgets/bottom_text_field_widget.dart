@@ -4,10 +4,15 @@ import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:whatsapp_clone/colors.dart';
 import 'package:whatsapp_clone/common/enums/message_enum.dart';
+import 'package:whatsapp_clone/common/providers/message_reply_provider.dart';
 import 'package:whatsapp_clone/common/utils/utils.dart';
 import 'package:whatsapp_clone/features/chat/controller/chat_controller.dart';
+import 'package:whatsapp_clone/features/chat/widgets/message_reply_preview.dart';
 
 class BottomTextField extends ConsumerStatefulWidget {
   final String receiverUserId;
@@ -22,6 +27,25 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
   final messageController = TextEditingController();
   bool isShowEmojiContainer = false;
   FocusNode focusNode = FocusNode();
+  FlutterSoundRecorder? flutterSoundRecorder;
+  bool isRecorderInit = false;
+  bool isRecording = false;
+
+  @override
+  void initState() {
+    flutterSoundRecorder = FlutterSoundRecorder();
+    super.initState();
+    openAudio();
+  }
+
+  void openAudio() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw RecordingPermissionException('Mic is not allowed');
+    }
+    await flutterSoundRecorder!.openRecorder();
+    isRecorderInit = true;
+  }
 
   void sendTextMessage() async {
     if (isShowSendButton) {
@@ -31,7 +55,24 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
             widget.receiverUserId,
           );
       setState(() {
-        messageController.text = '';
+        messageController.clear();
+      });
+    } else {
+      var tempDirectory = await getTemporaryDirectory();
+      var path = "${tempDirectory.path}/flutter_sound.aac";
+
+      if (!isRecorderInit) {
+        return;
+      }
+      if (isRecording) {
+        await flutterSoundRecorder!.stopRecorder();
+        sendFileMessage(File(path), MessageEnum.audio);
+      } else {
+        await flutterSoundRecorder!.startRecorder(toFile: path);
+      }
+
+      setState(() {
+        isRecording = !isRecording;
       });
     }
   }
@@ -48,14 +89,14 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
         );
   }
 
-  // void selectGif() async {
-  //   final gif = await pickGIF(context);
-  //   if (gif != null) {
-  //     ref
-  //         .read(chatControllerProvider)
-  //         .sendGifMessage(context, gif.url, widget.receiverUserId);
-  //   }
-  // }
+  void selectGif() async {
+    final gif = await pickGIF(context);
+    if (gif != null) {
+      ref
+          .read(chatControllerProvider)
+          .sendGifMessage(context, gif.url, widget.receiverUserId);
+    }
+  }
 
   void selectImage() async {
     File? image = await pickImageFromGallery(context);
@@ -104,13 +145,18 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
   @override
   void dispose() {
     messageController.dispose();
+    flutterSoundRecorder!.closeRecorder();
+    isRecorderInit = false;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final messageReply = ref.watch(messageReplyProvider);
+    final isShowMessageReply = messageReply != null;
     return Column(
       children: [
+        isShowMessageReply ? const MessageReplyPreview() : const SizedBox(),
         Row(
           children: [
             Expanded(
@@ -148,7 +194,7 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: selectGif,
                             icon: const Icon(
                               Icons.gif,
                               color: Colors.grey,
@@ -200,7 +246,11 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
                 child: InkWell(
                   onTap: sendTextMessage,
                   child: Icon(
-                    isShowSendButton ? Icons.send : Icons.mic,
+                    isShowSendButton
+                        ? Icons.send
+                        : isRecording
+                            ? Icons.close
+                            : Icons.mic,
                     color: whiteColor,
                   ),
                 ),

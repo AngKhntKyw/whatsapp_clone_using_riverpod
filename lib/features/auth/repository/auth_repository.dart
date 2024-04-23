@@ -31,7 +31,10 @@ class AuthRepository {
         verificationCompleted: (phoneAuthCredential) async {
           await firebaseAuth.signInWithCredential(phoneAuthCredential);
         },
-        verificationFailed: (error) => throw Exception(error.message),
+        verificationFailed: (error) {
+          showSnackBar(context, error.message!);
+          throw Exception(error.message);
+        },
         codeSent: (verificationId, forceResendingToken) => Navigator.pushNamed(
             context, OTPScreen.routeName,
             arguments: verificationId),

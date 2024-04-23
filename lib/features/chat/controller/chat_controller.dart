@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_clone/common/enums/message_enum.dart';
+import 'package:whatsapp_clone/common/providers/message_reply_provider.dart';
 import 'package:whatsapp_clone/features/auth/controller/auth_controller.dart';
 import 'package:whatsapp_clone/features/chat/repository/chat_repository.dart';
 import 'package:whatsapp_clone/models/chat_contacts.dart';
@@ -23,13 +23,17 @@ class ChatController {
 
   void sendTextMessage(
       BuildContext context, String text, String receiverUserId) {
+    final messageReply = ref.watch(messageReplyProvider);
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendTextMessage(
-              context: context,
-              text: text,
-              receiverUserId: receiverUserId,
-              senderUser: value!),
+            context: context,
+            text: text,
+            receiverUserId: receiverUserId,
+            senderUser: value!,
+            messageReply: messageReply,
+          ),
         );
+    ref.read(messageReplyProvider.notifier).update((state) => null);
   }
 
   Stream<List<ChatContacts>> chatContacts() {
@@ -46,6 +50,8 @@ class ChatController {
     required String receiverUserId,
     required MessageEnum messageEnum,
   }) async {
+    final messageReply = ref.watch(messageReplyProvider);
+
     ref
         .read(userDataAuthProvider)
         .whenData((value) => chatRepository.sendFileMessage(
@@ -55,7 +61,9 @@ class ChatController {
               senderUser: value!,
               ref: ref,
               messageEnum: messageEnum,
+              messageReply: messageReply,
             ));
+    ref.read(messageReplyProvider.notifier).update((state) => null);
   }
 
   void sendGifMessage(
@@ -63,11 +71,26 @@ class ChatController {
     String gifUrl,
     String receiverUserId,
   ) {
-    ref.read(userDataAuthProvider).whenData((value) =>
-        chatRepository.sendGifMessage(
-            context: context,
-            gifUrl: gifUrl,
-            receiverUserId: receiverUserId,
-            senderUser: value!));
+    final messageReply = ref.watch(messageReplyProvider);
+
+    int gifUrlIndex = gifUrl.lastIndexOf('_') + 1;
+    String gifUrlPart = gifUrl.substring(gifUrlIndex);
+    String newGifUrl = 'https://i.giphy.com/media/$gifUrlPart/200.gif';
+
+    ref
+        .read(userDataAuthProvider)
+        .whenData((value) => chatRepository.sendGifMessage(
+              context: context,
+              gifUrl: newGifUrl,
+              receiverUserId: receiverUserId,
+              senderUser: value!,
+              messageReply: messageReply,
+            ));
+    ref.read(messageReplyProvider.notifier).update((state) => null);
+  }
+
+  void setChatMessageSeen(
+      BuildContext context, String receiverUserId, String messageId) {
+    chatRepository.setChatMessageSeen(context, receiverUserId, messageId);
   }
 }

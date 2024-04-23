@@ -1,10 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
+import 'package:enough_giphy_flutter/enough_giphy_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:giphy_picker/giphy_picker.dart';
-
 
 void showSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
@@ -38,17 +37,13 @@ Future<File?> pickVideoFromGallery(BuildContext context) async {
   return video;
 }
 
-// Future<GiphyGif?> pickGIF(BuildContext context) async {
-//   GiphyGif? giphyGif;
-//   try {
-//     giphyGif = await Giphy.getGif(
-//         context: context, apiKey: 'JEw73mLNZs8DqRK4N7L6AyXwrIHOB4Ix');
-//   } catch (e) {
-//     showSnackBar(context, '$e');
-//   }
-//   return giphyGif;
-// }
-
-final gif = await GiphyPicker.pickGif(
-                  context: context, 
-                  apiKey: '[YOUR GIPHY APIKEY]');
+Future<GiphyGif?> pickGIF(BuildContext context) async {
+  GiphyGif? giphyGif;
+  try {
+    giphyGif = await Giphy.getGif(
+        context: context, apiKey: 'JEw73mLNZs8DqRK4N7L6AyXwrIHOB4Ix');
+  } catch (e) {
+    showSnackBar(context, '$e');
+  }
+  return giphyGif;
+}

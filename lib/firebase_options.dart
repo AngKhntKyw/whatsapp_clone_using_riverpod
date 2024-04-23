@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -71,10 +68,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDmeDPVhsXZgSKq1NGlguUokCEtuaqwWGQ',
-    appId: '1:844741231468:ios:9620bbf246ec461775e949',
+    appId: '1:844741231468:ios:d66e56d9e12655e475e949',
     messagingSenderId: '844741231468',
     projectId: 'whatsapp-clone-af023',
     storageBucket: 'whatsapp-clone-af023.appspot.com',
-    iosBundleId: 'com.example.whatsappClone.RunnerTests',
+    iosBundleId: 'com.example.whatsappClone',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAsNZ_pXGg8fmq4F5hz2vI0Fbyb8OYXf3M',
+    appId: '1:844741231468:web:7027f64b2de8604b75e949',
+    messagingSenderId: '844741231468',
+    projectId: 'whatsapp-clone-af023',
+    authDomain: 'whatsapp-clone-af023.firebaseapp.com',
+    storageBucket: 'whatsapp-clone-af023.appspot.com',
+  );
+
 }
