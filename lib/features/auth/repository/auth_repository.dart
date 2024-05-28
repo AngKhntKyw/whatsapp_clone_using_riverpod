@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,7 +11,7 @@ import 'package:whatsapp_clone/common/utils/utils.dart';
 import 'package:whatsapp_clone/features/auth/screens/otp_screen.dart';
 import 'package:whatsapp_clone/features/auth/screens/user_information_screen.dart';
 import 'package:whatsapp_clone/models/user_model.dart';
-import 'package:whatsapp_clone/screens/mobile_layout_screen.dart';
+import 'package:whatsapp_clone/mobile_layout_screen.dart';
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
@@ -33,6 +34,7 @@ class AuthRepository {
         },
         verificationFailed: (error) {
           showSnackBar(context, error.message!);
+          log("${error.message}");
           throw Exception(error.message);
         },
         codeSent: (verificationId, forceResendingToken) => Navigator.pushNamed(

@@ -87,6 +87,7 @@ class StatusRepository {
 
       if (statusesSnapshot.docs.isNotEmpty) {
         Status status = Status.fromMap(statusesSnapshot.docs[0].data());
+
         statusImageUrls = status.photoUrl;
         statusImageUrls.add(imageurl);
         await fireStore

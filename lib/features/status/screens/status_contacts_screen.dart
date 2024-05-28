@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:whatsapp_clone/colors.dart';
+import 'package:whatsapp_clone/common/utils/colors.dart';
 import 'package:whatsapp_clone/common/widgets/error.dart';
 import 'package:whatsapp_clone/common/widgets/loader.dart';
 import 'package:whatsapp_clone/features/status/controller/status_controller.dart';
+import 'package:whatsapp_clone/features/status/screens/status_screen.dart';
 import 'package:whatsapp_clone/models/status_model.dart';
 
 class StatusContactsScreen extends ConsumerWidget {
@@ -28,7 +29,10 @@ class StatusContactsScreen extends ConsumerWidget {
             return Column(
               children: [
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, StatusScreen.routeName,
+                        arguments: statusData);
+                  },
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: ListTile(

@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:whatsapp_clone/colors.dart';
+import 'package:whatsapp_clone/common/utils/colors.dart';
 import 'package:whatsapp_clone/common/enums/message_enum.dart';
 import 'package:whatsapp_clone/common/providers/message_reply_provider.dart';
 import 'package:whatsapp_clone/common/utils/utils.dart';
@@ -16,7 +16,9 @@ import 'package:whatsapp_clone/features/chat/widgets/message_reply_preview.dart'
 
 class BottomTextField extends ConsumerStatefulWidget {
   final String receiverUserId;
-  const BottomTextField({super.key, required this.receiverUserId});
+  final bool isGroupChat;
+  const BottomTextField(
+      {super.key, required this.receiverUserId, required this.isGroupChat});
 
   @override
   ConsumerState<BottomTextField> createState() => _BottomTextFieldState();
@@ -53,6 +55,7 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
             context,
             messageController.text.trim(),
             widget.receiverUserId,
+            widget.isGroupChat,
           );
       setState(() {
         messageController.clear();
@@ -86,15 +89,19 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
           file: file,
           receiverUserId: widget.receiverUserId,
           messageEnum: messageEnum,
+          isGroupChat: widget.isGroupChat,
         );
   }
 
   void selectGif() async {
     final gif = await pickGIF(context);
     if (gif != null) {
-      ref
-          .read(chatControllerProvider)
-          .sendGifMessage(context, gif.url, widget.receiverUserId);
+      ref.read(chatControllerProvider).sendGifMessage(
+            context,
+            gif.url,
+            widget.receiverUserId,
+            widget.isGroupChat,
+          );
     }
   }
 
@@ -262,6 +269,7 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
             ? SizedBox(
                 height: 310,
                 child: EmojiPicker(
+                  config: const Config(bgColor: backgroundColor),
                   onEmojiSelected: (category, emoji) {
                     setState(() {
                       messageController.text =
