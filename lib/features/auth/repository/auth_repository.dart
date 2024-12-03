@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_clone/common/repositories/common_firebase_storage_repository.dart';
 import 'package:whatsapp_clone/common/utils/utils.dart';
@@ -62,6 +63,31 @@ class AuthRepository {
     }
   }
 
+  void signUp(
+      {required BuildContext context,
+      required String email,
+      required String password}) async {
+    try {
+      await firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      Navigator.pushNamedAndRemoveUntil(
+          context, UserInformationScreen.routeName, (route) => false);
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.message!);
+    }
+  }
+
+  void signIn(
+      {required BuildContext context,
+      required String email,
+      required String password}) async {
+    final uc = await firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
+    log(uc.user!.uid);
+    Navigator.pushNamedAndRemoveUntil(
+        context, UserInformationScreen.routeName, (route) => false);
+  }
+
   void saveUserDataToFirebase({
     required String name,
     required File? imageFile,
@@ -70,6 +96,7 @@ class AuthRepository {
   }) async {
     try {
       final uid = firebaseAuth.currentUser!.uid;
+      log("UID ; $uid");
       String imageUrl =
           'https://i.pinimg.com/564x/ac/45/51/ac4551cc2fd9359885298075a2b5e9d7.jpg';
       if (imageFile != null) {
@@ -82,7 +109,8 @@ class AuthRepository {
         name: name,
         profileUrl: imageUrl,
         isOnline: true,
-        phoneNumber: firebaseAuth.currentUser!.phoneNumber!,
+        // phoneNumber: firebaseAuth.currentUser!.phoneNumber!,
+        phoneNumber: "00000000",
         groupId: [],
       );
       await firestore.collection('users').doc(uid).set(user.toMap());

@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:whatsapp_clone/common/utils/colors.dart';
 import 'package:whatsapp_clone/common/widgets/custom_button.dart';
 import 'package:whatsapp_clone/features/auth/screens/login_screen.dart';
+import 'package:whatsapp_clone/features/landing/screens/sign_in_screen.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
 
   void navigateToLoginScreen(BuildContext context) {
-    Navigator.pushNamed(context, LoginScreen.routeName);
+    // Navigator.pushNamed(context, LoginScreen.routeName);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SignInScreen(),
+        ));
   }
 
   @override
@@ -30,8 +36,8 @@ class LandingScreen extends StatelessWidget {
               SizedBox(height: size.height / 9),
               Image.asset(
                 'assets/bg.png',
-                height: 340,
-                width: 340,
+                height: size.width / 1.5,
+                width: size.width / 1.5,
                 color: tabColor,
               ),
               SizedBox(height: size.height / 9),

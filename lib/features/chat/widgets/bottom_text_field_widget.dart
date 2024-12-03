@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+// import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -93,17 +93,17 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
         );
   }
 
-  void selectGif() async {
-    final gif = await pickGIF(context);
-    if (gif != null) {
-      ref.read(chatControllerProvider).sendGifMessage(
-            context,
-            gif.url,
-            widget.receiverUserId,
-            widget.isGroupChat,
-          );
-    }
-  }
+  // void selectGif() async {
+  //   final gif = await pickGIF(context);
+  //   if (gif != null) {
+  //     ref.read(chatControllerProvider).sendGifMessage(
+  //           context,
+  //           gif.url,
+  //           widget.receiverUserId,
+  //           widget.isGroupChat,
+  //         );
+  //   }
+  // }
 
   void selectImage() async {
     File? image = await pickImageFromGallery(context);
@@ -200,13 +200,13 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
                               color: Colors.grey,
                             ),
                           ),
-                          IconButton(
-                            onPressed: selectGif,
-                            icon: const Icon(
-                              Icons.gif,
-                              color: Colors.grey,
-                            ),
-                          ),
+                          // IconButton(
+                          //   onPressed: selectGif,
+                          //   icon: const Icon(
+                          //     Icons.gif,
+                          //     color: Colors.grey,
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
@@ -265,25 +265,24 @@ class _BottomTextFieldState extends ConsumerState<BottomTextField> {
             ),
           ],
         ),
-        isShowEmojiContainer == true
-            ? SizedBox(
-                height: 310,
-                child: EmojiPicker(
-                  config: const Config(bgColor: backgroundColor),
-                  onEmojiSelected: (category, emoji) {
-                    setState(() {
-                      messageController.text =
-                          messageController.text + emoji.emoji;
-                    });
-                    if (!isShowSendButton) {
-                      setState(() {
-                        isShowSendButton = true;
-                      });
-                    }
-                  },
-                ),
-              )
-            : const SizedBox(),
+        // isShowEmojiContainer == true
+        //     ? SizedBox(
+        //         height: 310,
+        //         child: EmojiPicker(
+        //           onEmojiSelected: (category, emoji) {
+        //             setState(() {
+        //               messageController.text =
+        //                   messageController.text + emoji.emoji;
+        //             });
+        //             if (!isShowSendButton) {
+        //               setState(() {
+        //                 isShowSendButton = true;
+        //               });
+        //             }
+        //           },
+        //         ),
+        //       )
+        //     : const SizedBox(),
       ],
     );
   }

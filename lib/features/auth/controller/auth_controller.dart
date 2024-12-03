@@ -29,6 +29,14 @@ class AuthController {
         context: context, verificationId: verificationId, otp: otp);
   }
 
+  void signUp(BuildContext context, String email, String password) async {
+    authRepository.signUp(context: context, email: email, password: password);
+  }
+
+  void signIn(BuildContext context, String email, String password) async {
+    authRepository.signIn(context: context, email: email, password: password);
+  }
+
   void saveUserDataToFirebase(
       String name, File? imageFile, BuildContext context) async {
     authRepository.saveUserDataToFirebase(
